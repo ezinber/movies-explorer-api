@@ -4,7 +4,6 @@
   "description": "Серверная часть дипломного проекта по веб-разработке",
   "main": "index.js",
   "scripts": {
-    "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "lint": "npx eslint .",
     "start": "node app.js",
     "dev": "nodemon app.js"
@@ -26,8 +25,15 @@
     "nodemon": "^2.0.10"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "celebrate": "^14.0.0",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-winston": "^4.1.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.2",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
   }
 }
