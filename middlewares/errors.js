@@ -1,7 +1,6 @@
 const { isCelebrateError } = require('celebrate');
 
-// eslint-disable-next-line no-unused-vars
-module.exports = (err, req, res, next) => {
+module.exports = (err, req, res) => {
   if (isCelebrateError(err) || (err.name === 'ValidationError' && !err.statusCode)) {
     return res.status(400).send({ message: 'Введены некорректные данные' });
   }

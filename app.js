@@ -20,9 +20,9 @@ mongoose.connect(MONGO_URL, {
   useUnifiedTopology: true,
 });
 
+app.use(requestLogger);
 app.use(express.json());
 app.use(cookieParser());
-app.use(requestLogger);
 
 app.use(router);
 

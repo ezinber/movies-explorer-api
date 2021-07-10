@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const ValidationError = require('../utils/errors/ValidationError');
+const SameEmailError = require('../utils/errors/SameEmailError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -66,10 +67,7 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        const EmailError = new Error('Пользователь с таким email уже зарегистрирован');
-        EmailError.statusCode = 409;
-
-        return next(EmailError);
+        return next(new SameEmailError('Пользователь с таким email уже зарегистрирован'));
       }
 
       if (err.name === 'ValidationError') {
