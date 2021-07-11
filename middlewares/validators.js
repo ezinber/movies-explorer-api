@@ -1,25 +1,28 @@
 const { celebrate, Joi } = require('celebrate');
 const { isURL } = require('validator');
+const { errorMessages } = require('../utils/constants');
+
+const { invalidUrlErrorMessage } = errorMessages;
 
 module.exports.loginValidator = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
   }),
 });
 
 module.exports.createUserValidator = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    name: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
   }),
 });
 
 module.exports.updateUserValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    email: Joi.string().email().required(),
+    email: Joi.string().required().email(),
   }),
 });
 
@@ -33,32 +36,32 @@ module.exports.createMovieValidator = celebrate({
     image: Joi
       .string()
       .required()
-      .custom((v, helpers) => {
-        if (!isURL(v, { require_protocol: true })) {
-          return helpers.error('link.invalid');
+      .custom((value, helpers) => {
+        if (isURL(value, { require_protocol: true })) {
+          return value;
         }
 
-        return v;
+        return helpers.error(invalidUrlErrorMessage);
       }),
     trailer: Joi
       .string()
       .required()
-      .custom((v, helpers) => {
-        if (!isURL(v, { require_protocol: true })) {
-          return helpers.error('link.invalid');
+      .custom((value, helpers) => {
+        if (isURL(value, { require_protocol: true })) {
+          return value;
         }
 
-        return v;
+        return helpers.error(invalidUrlErrorMessage);
       }),
     thumbnail: Joi
       .string()
       .required()
-      .custom((v, helpers) => {
-        if (!isURL(v, { require_protocol: true })) {
-          return helpers.error('link.invalid');
+      .custom((value, helpers) => {
+        if (isURL(value, { require_protocol: true })) {
+          return value;
         }
 
-        return v;
+        return helpers.error(invalidUrlErrorMessage);
       }),
     movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
@@ -68,6 +71,6 @@ module.exports.createMovieValidator = celebrate({
 
 module.exports.deleteMovieValidator = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
+    movieId: Joi.string().hex().length(24),
   }),
 });

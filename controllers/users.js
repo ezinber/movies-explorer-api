@@ -1,12 +1,24 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const { NODE_ENV, JWT_SECRET } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const ValidationError = require('../utils/errors/ValidationError');
 const SameEmailError = require('../utils/errors/SameEmailError');
+const { errorMessages, successMessages } = require('../utils/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const {
+  loginValidationErrorMessage,
+  sameEmailErrorMessage,
+  createUserValidationErrorMessage,
+  updateUserValidationErrorMessage,
+  userNotFoundErrorMessage,
+} = errorMessages;
+const {
+  loginSuccessMessage,
+  logoutSuccessMessage,
+} = successMessages;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -15,7 +27,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        JWT_SECRET,
       );
 
       res
@@ -25,11 +37,11 @@ module.exports.login = (req, res, next) => {
           sameSite: 'None',
           secure: NODE_ENV === 'production',
         })
-        .send({ message: 'Вход успешно выполнен!' });
+        .send({ message: loginSuccessMessage });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new ValidationError('Переданы некорректные данные при попытке входа'));
+        return next(new ValidationError(loginValidationErrorMessage));
       }
 
       return next(err);
@@ -43,7 +55,7 @@ module.exports.logout = (req, res) => {
       sameSite: 'None',
       secure: NODE_ENV === 'production',
     })
-    .send({ message: 'Выход успешен' });
+    .send({ message: logoutSuccessMessage });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -67,11 +79,11 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        return next(new SameEmailError('Пользователь с таким email уже зарегистрирован'));
+        return next(new SameEmailError(sameEmailErrorMessage));
       }
 
       if (err.name === 'ValidationError') {
-        return next(new ValidationError('Переданы некорректные данные при создании пользователя'));
+        return next(new ValidationError(createUserValidationErrorMessage));
       }
 
       return next(err);
@@ -83,7 +95,7 @@ module.exports.getUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new NotFoundError('Пользователь по указанному _id не найден'));
+        return next(new NotFoundError(userNotFoundErrorMessage));
       }
 
       return next(err);
@@ -97,18 +109,15 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        const EmailError = new Error('Пользователь с таким email уже зарегистрирован');
-        EmailError.statusCode = 409;
-
-        return next(EmailError);
+        return next(new SameEmailError(sameEmailErrorMessage));
       }
 
       if (err.name === 'CastError') {
-        return next(new NotFoundError('Пользователь с указанным _id не найден'));
+        return next(new NotFoundError(userNotFoundErrorMessage));
       }
 
       if (err.name === 'ValidationError') {
-        return next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
+        return next(new ValidationError(updateUserValidationErrorMessage));
       }
 
       return next(err);
