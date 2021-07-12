@@ -3,7 +3,7 @@
 Серверная часть дипломного проекта по веб-разработке
 
 **Адрес API:**
-`host.movies-explorer.nomoredomains.rocks`
+`https://host.movies-explorer.nomoredomains.rocks`
 
 ---
 
