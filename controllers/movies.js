@@ -69,7 +69,7 @@ module.exports.deleteMovie = (req, res, next) => {
         throw new RestrictionError(deleteMovieRestrictionErrorMessage);
       }
 
-      return Movie.findByIdAndRemove(req.params.movieId);
+      return movie.remove();
     })
     .then(() => res.send({ message: deleteMovieSuccessMessage }))
     .catch((err) => {

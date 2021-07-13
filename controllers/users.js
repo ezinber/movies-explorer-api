@@ -5,7 +5,7 @@ const { NODE_ENV, JWT_SECRET } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const ValidationError = require('../utils/errors/ValidationError');
-const SameEmailError = require('../utils/errors/SameEmailError');
+const ConflictError = require('../utils/errors/ConflictError');
 const { errorMessages, successMessages } = require('../utils/constants');
 
 const {
@@ -79,7 +79,7 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        return next(new SameEmailError(sameEmailErrorMessage));
+        return next(new ConflictError(sameEmailErrorMessage));
       }
 
       if (err.name === 'ValidationError') {
@@ -93,13 +93,7 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new NotFoundError(userNotFoundErrorMessage));
-      }
-
-      return next(err);
-    });
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -109,7 +103,7 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        return next(new SameEmailError(sameEmailErrorMessage));
+        return next(new ConflictError(sameEmailErrorMessage));
       }
 
       if (err.name === 'CastError') {
