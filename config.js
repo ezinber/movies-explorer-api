@@ -6,7 +6,7 @@ const {
   JWT_SECRET = 'dev-secret',
   MONGO_URL = 'mongodb://localhost:27017/bitfilmsdb',
   PORT = 3000,
-  CORS_ORIGIN = 'http://localhost:3000',
+  CORS_ORIGIN = 'http://localhost:3001',
 } = process.env;
 
 module.exports = {
