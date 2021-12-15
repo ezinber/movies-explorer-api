@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { NODE_ENV, JWT_SECRET } = require('../config');
+const { SECURE, JWT_SECRET, SAME_SITE } = require('../config');
 const User = require('../models/user');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const ValidationError = require('../utils/errors/ValidationError');
@@ -34,8 +34,8 @@ module.exports.login = (req, res, next) => {
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-          sameSite: 'None',
-          secure: NODE_ENV === 'production',
+          sameSite: SAME_SITE,
+          secure: SAME_SITE === 'None' ? true : SECURE,
         })
         .send({ message: loginSuccessMessage });
     })
@@ -52,8 +52,8 @@ module.exports.logout = (req, res) => {
   res
     .clearCookie('jwt', {
       httpOnly: true,
-      sameSite: 'None',
-      secure: NODE_ENV === 'production',
+      sameSite: SAME_SITE,
+      secure: SAME_SITE === 'None' ? true : SECURE,
     })
     .send({ message: logoutSuccessMessage });
 };
