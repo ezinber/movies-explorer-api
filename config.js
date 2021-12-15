@@ -12,6 +12,16 @@ const {
   SECURE = false,
 } = process.env;
 
+const cookieData = {
+  maxAge: 3600000 * 24 * 7,
+  httpOnly: true,
+  sameSite: SAME_SITE,
+};
+
+if (SECURE) {
+  cookieData.secure = true;
+}
+
 module.exports = {
   NODE_ENV,
   JWT_SECRET,
@@ -21,4 +31,5 @@ module.exports = {
   CORS_ORIGIN,
   SAME_SITE,
   SECURE,
+  cookieData,
 };
