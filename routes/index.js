@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { BASE_ROUTE } = require('../config');
 const auth = require('../middlewares/auth');
 const { login, logout, createUser } = require('../controllers/users');
 const usersRouter = require('./users');
@@ -9,12 +10,12 @@ const { errorMessages } = require('../utils/constants');
 
 const { notFoundErrorMessage } = errorMessages;
 
-router.post('/signup', createUserValidator, createUser);
-router.post('/signin', loginValidator, login);
+router.post(`${BASE_ROUTE}/signup`, createUserValidator, createUser);
+router.post(`${BASE_ROUTE}/signin`, loginValidator, login);
 router.use(auth);
-router.use('/users', usersRouter);
-router.use('/movies', moviesRouter);
-router.get('/signout', logout);
+router.use(`${BASE_ROUTE}/users`, usersRouter);
+router.use(`${BASE_ROUTE}/movies`, moviesRouter);
+router.get(`${BASE_ROUTE}/signout`, logout);
 router.use(() => {
   throw new NotFoundError(notFoundErrorMessage);
 });
